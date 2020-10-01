@@ -1,8 +1,8 @@
 import React from "react";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
-import NavDropdown from "react-bootstrap/NavDropdown";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 
@@ -11,22 +11,33 @@ import "./App.scss";
 
 function App() {
   return (
-    <div className="App">
-      <Navbar variant="dark" bg="primary">
-        <Navbar.Brand href="#home">Grindfest Matchmaker</Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="mr-auto">
-            <Nav.Link href="#home">Home</Nav.Link>
-          </Nav>  
-        </Navbar.Collapse>
-        <Button variant="success">Signup</Button>
-        <Button variant="primary">Login</Button>
-      </Navbar>
-      <Container>
-        
-      </Container>
-    </div>
+    <Router>
+      <div className="App">
+        <Navbar variant="dark" bg="primary">
+          <Navbar.Brand href="#home">Grindfest Matchmaker</Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="mr-auto">
+              <Nav.Link href="#home">Home</Nav.Link>
+            </Nav>
+          </Navbar.Collapse>
+          <Link to="/signup">
+            <Button variant="success">Signup</Button>
+          </Link>
+          <Link to="/login">
+            <Button variant="primary">Login</Button>
+          </Link>
+        </Navbar>
+        <Container>
+          <Switch>
+            <Route path="/login">
+              
+            </Route>
+            <Route path="/"></Route>
+          </Switch>
+        </Container>
+      </div>
+    </Router>
   );
 }
 
