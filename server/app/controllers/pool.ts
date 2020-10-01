@@ -51,6 +51,9 @@ export const leavePool = async (req: Request, res: Response) => {
 
   if (authUser.isAdmin() || authUser.id === userId) {
     pool.delete(user);
+    res.send(200);
+  } else {
+    res.send(403);
   }
 };
 
