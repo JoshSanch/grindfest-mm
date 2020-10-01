@@ -4,6 +4,8 @@ import passport from "passport";
 import configs from "./config";
 import { IUser } from "../app/models/user";
 
+import { joinPool, leavePool, showPool } from "../app/controllers/pool";
+
 const env = process.env.NODE_ENV || "development";
 const config = configs[env];
 
@@ -38,4 +40,11 @@ export default (app: Express) => {
       });
     })(req, res, next);
   });
+
+  //=============================
+  // Pool routes
+  //=============================
+  app.post("/pool/join", joinPool);
+  app.post("/pool/leave", leavePool);
+  app.get("/pool", showPool);
 };

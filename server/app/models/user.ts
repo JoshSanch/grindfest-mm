@@ -11,6 +11,7 @@ export interface IUser extends Document {
   name: string;
   tag: string;
   type: UserType;
+  isAdmin: () => boolean;
 }
 
 const UserSchema: Schema = new Schema({
@@ -21,4 +22,14 @@ const UserSchema: Schema = new Schema({
   type: { type: Number, required: true, default: UserType.Default },
 });
 
-export default mongoose.model<IUser>('User', UserSchema);
+UserSchema.methods.isAdmin = function () {
+  return this.type === UserType.Admin;
+};
+
+UserSchema.methods.toJSON = function () {
+  const obj = this.toObject();
+  delete obj.password;
+  return obj;
+};
+
+export default mongoose.model<IUser>("User", UserSchema);

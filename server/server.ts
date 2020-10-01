@@ -19,14 +19,13 @@ mongoose.connect(config.db, { useNewUrlParser: true }).catch((e) => {
   process.exit(1);
 });
 
-
 // Configure server
 const app = express();
 
 expressConfig(app);
 import bodyParser from "body-parser";
-app.use(bodyParser.urlencoded({ extended: false })) // parse application/x-www-form-urlencoded
-app.use(bodyParser.json()) // parse application/json
+app.use(bodyParser.urlencoded({ extended: false })); // parse application/x-www-form-urlencoded
+app.use(bodyParser.json()); // parse application/json
 
 // Configure sessions
 app.use(
