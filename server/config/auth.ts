@@ -19,7 +19,9 @@ passport.use(
     async (email, password, done) => {
       // Match user
       try {
+        console.log("Trying to find user");
         const user = await User.findOne({ email });
+        console.log(user);
         if (user) {
           // User exists; we attept to authenticate
           bcrypt.compare(password, user.password, (err, isMatch) => {
@@ -30,6 +32,7 @@ passport.use(
             if (isMatch) {
               return done(null, user);
             } else {
+              console.warn("Incorrect password supplied");
               return done(null, false, {
                 message: "Invalid username or password.",
               });
@@ -41,7 +44,7 @@ passport.use(
           const salt = await bcrypt.genSalt(10);
           const hash = await bcrypt.hash(password, salt);
           newUser.password = hash;
-          
+
           try {
             const createdUser = await newUser.save();
             done(null, user);

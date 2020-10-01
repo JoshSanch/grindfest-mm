@@ -24,6 +24,7 @@ export default (app: Express) => {
         return res.status(400).json({ errors: err });
       }
       if (!user) {
+        console.warn("User not found");
         return res
           .status(400)
           .json({ errors: "Invalid username or password." });
