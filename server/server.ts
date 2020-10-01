@@ -45,7 +45,7 @@ app.use(passport.session());
 makeRoutes(app);
 
 // Start listening
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 app.listen(port);
 console.log("Application started on port " + port);
 
