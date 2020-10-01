@@ -6,6 +6,8 @@ import Nav from "react-bootstrap/Nav";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 
+import LoginPage from "./login/LoginPage";
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.scss";
 
@@ -28,10 +30,10 @@ function App() {
             <Button variant="primary">Login</Button>
           </Link>
         </Navbar>
-        <Container>
+        <Container className="content">
           <Switch>
             <Route path="/login">
-              
+              <LoginPage />
             </Route>
             <Route path="/"></Route>
           </Switch>
