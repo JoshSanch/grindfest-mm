@@ -7,7 +7,7 @@ interface Config {
 const configs: Config = {
   development: {
     rootPath: path.normalize(__dirname + "/.."),
-    db: "mongodb://localhost/test",
+    db: "mongodb://localhost/grindfestmm",
   },
   production: {},
 };

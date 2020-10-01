@@ -9,6 +9,5 @@ const config = configs[env];
 
 export default (app: Express) => {
   app.use(express.static(config.rootPath + '/public'));
-  app.use(bodyParser.json());
   app.use(methodOverride());
 };

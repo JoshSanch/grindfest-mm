@@ -47,8 +47,9 @@ passport.use(
 
           try {
             const createdUser = await newUser.save();
-            done(null, user);
+            done(null, createdUser);
           } catch (e) {
+            console.error(e);
             done(null, false, { message: e });
           }
         }

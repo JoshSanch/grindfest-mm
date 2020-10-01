@@ -2,8 +2,8 @@ import express from "express";
 import mongoose from "mongoose";
 import session from "express-session";
 import connectMongo from "connect-mongo";
-import passport from "./config/auth";
 
+import passport from "./config/auth";
 import configs from "./config/config";
 import expressConfig from "./config/express";
 import makeRoutes from "./config/routes";
@@ -19,10 +19,14 @@ mongoose.connect(config.db, { useNewUrlParser: true }).catch((e) => {
   process.exit(1);
 });
 
+
 // Configure server
 const app = express();
+
 expressConfig(app);
-makeRoutes(app);
+import bodyParser from "body-parser";
+app.use(bodyParser.urlencoded({ extended: false })) // parse application/x-www-form-urlencoded
+app.use(bodyParser.json()) // parse application/json
 
 // Configure sessions
 app.use(
@@ -37,6 +41,9 @@ app.use(
 // Configure auth
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Configure routes
+makeRoutes(app);
 
 // Start listening
 const port = process.env.PORT || 3000;

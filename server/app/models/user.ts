@@ -17,8 +17,8 @@ const UserSchema: Schema = new Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   name: String,
-  tag: { type: String, required: true },
-  type: { type: Number, required: true },
+  tag: { type: String, required: true, default: "anonymous" },
+  type: { type: Number, required: true, default: UserType.Default },
 });
 
 export default mongoose.model<IUser>('User', UserSchema);
