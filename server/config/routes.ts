@@ -36,7 +36,7 @@ export default (app: Express) => {
         if (err) {
           return res.status(400).json({ errors: err });
         }
-        return res.status(200).json({ success: `Logged in ${user.id}` });
+        return res.status(200).json({ user });
       });
     })(req, res, next);
   });

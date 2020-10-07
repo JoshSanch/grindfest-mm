@@ -7,11 +7,16 @@ import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 
 import LoginPage from "./login/LoginPage";
+import { userStore } from "./login/UserProvider";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.scss";
 
 function App() {
+  const { state: userState } = React.useContext(userStore);
+  console.log(userState);
+  const isLoggedIn = Object.keys(userState).length > 0;
+
   return (
     <Router>
       <div className="App">
@@ -23,12 +28,21 @@ function App() {
               <Nav.Link href="#home">Home</Nav.Link>
             </Nav>
           </Navbar.Collapse>
-          <Link to="/signup">
-            <Button variant="success">Signup</Button>
-          </Link>
-          <Link to="/login">
-            <Button variant="primary">Login</Button>
-          </Link>
+          {!isLoggedIn && (
+            <>
+              <Link to="/signup">
+                <Button variant="success">Signup</Button>
+              </Link>
+              <Link to="/login">
+                <Button variant="primary">Login</Button>
+              </Link>
+            </>
+          )}
+          {isLoggedIn && (
+            <Link to="/">
+              <Button variant="danger">Logout</Button>
+            </Link>
+          )}
         </Navbar>
         <Container className="content">
           <Switch>

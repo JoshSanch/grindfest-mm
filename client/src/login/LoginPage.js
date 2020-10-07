@@ -4,17 +4,30 @@ import axios from "axios";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 
+import { userStore, LOGIN_SUCCESS } from "./UserProvider";
+
 import "./LoginPage.scss";
 
-const LoginPage = () => {
+const LoginPage = (setUser) => {
   const [email, setEmail] = React.useState();
   const [password, setPassword] = React.useState();
+  const userState = React.useContext(userStore);
 
   const handleSubmit = async () => {
-    const result = await axios.post("/authenticate", {
-      email,
-      password,
-    });
+    try {
+      const result = await axios.post("/authenticate", {
+        email,
+        password,
+      });
+
+      userState.dispatch({
+        type: LOGIN_SUCCESS,
+        payload: { user: result.data },
+      });
+    } catch (err) {
+      // Give the user negative feedback on login
+      console.error("Login failed");
+    }
   };
 
   return (
