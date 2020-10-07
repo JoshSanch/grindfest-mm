@@ -7,6 +7,7 @@ import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 
 import LoginPage from "./login/LoginPage";
+import HomePage from "./queue/HomePage";
 import { userStore } from "./login/UserProvider";
 
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -49,7 +50,9 @@ function App() {
             <Route path="/login">
               <LoginPage />
             </Route>
-            <Route path="/"></Route>
+            <Route path="/">
+              <HomePage />
+            </Route>
           </Switch>
         </Container>
       </div>
