@@ -2,11 +2,14 @@ import express from "express";
 import mongoose from "mongoose";
 import session from "express-session";
 import connectMongo from "connect-mongo";
+import SocketIO from "socket.io";
+import passport from "passport";
 
-import passport from "./config/auth";
+import jwtStrategy from "./config/auth";
 import configs from "./config/config";
 import expressConfig from "./config/express";
 import makeRoutes from "./config/routes";
+import makeSocket from "./config/socket";
 
 const env = process.env.NODE_ENV || "development";
 const config = configs[env];
@@ -38,15 +41,20 @@ app.use(
 );
 
 // Configure auth
-app.use(passport.initialize());
-app.use(passport.session());
+passport.use(jwtStrategy);
 
 // Configure routes
 makeRoutes(app);
 
 // Start listening
 const port = process.env.PORT || 5000;
-app.listen(port);
+const server = app.listen(port);
 console.log("Application started on port " + port);
+
+const io = SocketIO(server);
+
+io.on("connection", (socket) => {
+  console.log("Hello from a user!");
+})
 
 export default app;

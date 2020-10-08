@@ -1,10 +1,11 @@
 import { Express, Request, Response } from "express";
 import passport from "passport";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 import configs from "./config";
-import { IUser } from "../app/models/user";
-
-import { joinPool, leavePool, showPool } from "../app/controllers/pool";
+import User, { IUser } from "../app/models/user";
+import { logIn } from "./auth";
 
 const env = process.env.NODE_ENV || "development";
 const config = configs[env];
@@ -20,31 +21,31 @@ export default (app: Express) => {
   //=============================
   // Auth
   //=============================
-  app.post("/authenticate", (req: Request, res: Response, next) => {
-    passport.authenticate("local", (err, user: IUser, info) => {
-      if (err) {
-        return res.status(400).json({ errors: err });
-      }
-      if (!user) {
-        console.warn("User not found");
-        return res
-          .status(400)
-          .json({ errors: "Invalid username or password." });
+  app.post("/signup", async (req, res) => {
+    const { email, password, tag } = req.body;
+    try {
+      const user = await User.findOne({ email });
+      if (user) {
+        return res.status(400).json({
+          message: "User already exists",
+        });
       }
 
-      req.logIn(user, (err) => {
-        if (err) {
-          return res.status(400).json({ errors: err });
-        }
-        return res.status(200).json({ user });
+      // Create the user
+      const salt = await bcrypt.genSalt();
+      const hash = await bcrypt.hash(password, salt);
+      const newUser = new User({ email, password: hash, tag });
+      await newUser.save();
+      await logIn(email, password, res);
+    } catch {
+      return res.status(500).json({
+        message: "Could not create user",
       });
-    })(req, res, next);
+    }
   });
 
-  //=============================
-  // Pool routes
-  //=============================
-  app.post("/pool/join", joinPool);
-  app.post("/pool/leave", leavePool);
-  app.get("/pool", showPool);
+  app.post("/login", (req, res) => {
+    const { email, password } = req.body;
+    logIn(email, password, res);
+  });
 };
