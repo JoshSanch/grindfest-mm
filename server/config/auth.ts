@@ -33,14 +33,14 @@ export const logIn = async (email: string, password: string, res: Response) => {
       if (err) {
         throw err;
       }
-      console.log(isMatch);
+
       if (isMatch) {
         // Generate JWT
         const opts: jwt.SignOptions = {
           expiresIn: 360000,
         };
         const secret = "SECRET_KEY";
-        const token = jwt.sign({ email }, secret, opts);
+        const token = jwt.sign({ email, id: user.id }, secret, opts);
         return res.status(200).json({
           message: "Auth was successful",
           user,

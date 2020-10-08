@@ -1,39 +1,33 @@
+import { JwtSocket } from "../../server";
 import { Express, Request, Response } from "express";
-import { isBuffer } from "util";
 import User, { IUser } from "../models/user";
+import { Set } from "immutable";
 
-interface PoolJoinReq {
-  id: IUser['_id'];
+export interface PoolJoinReq {
+  id: IUser["_id"];
 }
 
-const pool: Set<IUser> = new Set();
+let pool: Set<IUser> = Set();
 
 /**
  * An API endpoint to join the pool
  * @param req the request; must include userId in the JSON body
  * @param res the response
  */
-export const joinPool = async (data: PoolJoinReq) => {
-  console.log("LOL");
+export const joinPool = async (data: PoolJoinReq, socket: JwtSocket) => {
   const { id } = data;
-  // const authUser = req.user as IUser;
-  // if (userId == null) {
-  //   return res.send(400).json({ message: "Missing `userId` parameter" });
-  // }
+  const authUserId = socket.decoded_token.id;
 
-  // const user = await User.findById(userId);
-  // if (!user) {
-  //   return res
-  //     .send(400)
-  //     .json({ message: `User with id "${userId}" does not exist` });
-  // }
+  const user = await User.findById(id);
+  const authUser = await User.findById(authUserId);
+  if (!user) {
+    return console.error("User doesn't exist");
+  }
 
-  // if (authUser.isAdmin() || authUser.id === userId) {
-  //   pool.add(user);
-  //   res.send(200);
-  // } else {
-  //   res.send(403);
-  // }
+  if (authUser.isAdmin() || authUser.id === id) {
+    pool = pool.add(user);
+    socket.emit("pool.update", { pool: [...pool.values()] });
+  }
 };
 
 /**

@@ -1,11 +1,14 @@
 import React, { createContext, useReducer } from "react";
+import jwtDecode from "jwt-decode";
 
 let initialUser;
 try {
-  initialUser = JSON.parse(sessionStorage.getItem("gmm.user")) || {};
+  const token = localStorage.getItem("gmm.token");
+  const user = jwtDecode(token);
+  initialUser = {token, user};
 } catch {
-  // Their session variable probably got messed up
-  sessionStorage.removeItem("gmm.user");
+  // Their local variable probably got messed up
+  localStorage.removeItem("gmm.token");
   initialUser = {};
 }
 const userStore = createContext(initialUser);
@@ -18,11 +21,11 @@ const UserProvider = ({ children }) => {
   const [state, dispatch] = useReducer((state, action) => {
     switch (action.type) {
       case LOGIN_SUCCESS:
-        const { user } = action.payload;
-        sessionStorage.setItem("gmm.user", JSON.stringify(user));
+        const { token } = action.payload;
+        localStorage.setItem("gmm.token", token);
         return action.payload;
       case LOGOUT_SUCCESS:
-        sessionStorage.removeItem("gmm.user");
+        localStorage.removeItem("gmm.token");
         return {};
       default:
         throw new Error();

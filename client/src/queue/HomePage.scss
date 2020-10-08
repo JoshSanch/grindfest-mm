@@ -1,9 +1,12 @@
 .queue-format {
   width: 100%;
-  height: 40vh;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.queue-button {
+  margin: 10px 0;
 }
 
 .queue-style {

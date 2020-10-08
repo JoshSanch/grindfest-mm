@@ -2,14 +2,20 @@ import express from "express";
 import mongoose from "mongoose";
 import session from "express-session";
 import connectMongo from "connect-mongo";
-import SocketIO from "socket.io";
+import socketio from "socket.io";
 import passport from "passport";
+import socketioJwt from "socketio-jwt";
+import { Server } from "http";
 
 import jwtStrategy from "./config/auth";
 import configs from "./config/config";
 import expressConfig from "./config/express";
 import makeRoutes from "./config/routes";
 import makeSocket from "./config/socket";
+
+export interface JwtSocket extends socketio.Socket {
+  decoded_token: any;
+}
 
 const env = process.env.NODE_ENV || "development";
 const config = configs[env];
@@ -27,6 +33,7 @@ const app = express();
 
 expressConfig(app);
 import bodyParser from "body-parser";
+import { Http2ServerRequest } from "http2";
 app.use(bodyParser.urlencoded({ extended: false })); // parse application/x-www-form-urlencoded
 app.use(bodyParser.json()); // parse application/json
 
@@ -48,13 +55,24 @@ makeRoutes(app);
 
 // Start listening
 const port = process.env.PORT || 5000;
-const server = app.listen(port);
+const server = new Server(app);
+const io = socketio(server);
+
+io.sockets
+  .on(
+    "connection",
+    socketioJwt.authorize({
+      secret: "SECRET_KEY",
+      timeout: 15000, // 15 seconds to send the authentication message
+    })
+  )
+  .on("authenticated", (socket: JwtSocket) => {
+    //this socket is authenticated, we are good to handle more events from it.
+    makeSocket(socket)
+  });
+
+server.listen(port);
 console.log("Application started on port " + port);
 
-const io = SocketIO(server);
-
-io.on("connection", (socket) => {
-  console.log("Hello from a user!");
-})
 
 export default app;

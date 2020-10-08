@@ -12,6 +12,8 @@ export interface IUser extends Document {
   tag: string;
   type: UserType;
   isAdmin: () => boolean;
+  equals: (other: IUser) => boolean;
+  hashCode: () => number;
 }
 
 const UserSchema: Schema = new Schema({
@@ -25,6 +27,14 @@ const UserSchema: Schema = new Schema({
 UserSchema.methods.isAdmin = function () {
   return this.type === UserType.Admin;
 };
+
+UserSchema.methods.equals = function (other: IUser) {
+  return this.id === other.id;
+}
+
+UserSchema.methods.hashCode = function () {
+  return parseInt(this.id, 16) | 0;
+}
 
 UserSchema.methods.toJSON = function () {
   const obj = this.toObject();

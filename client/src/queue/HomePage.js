@@ -1,45 +1,65 @@
 import React from "react";
-import axios from "axios";
 
-import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import ListGroup from "react-bootstrap/ListGroup";
 
+import io from "socket.io-client";
+
+import { userStore } from "../login/UserProvider";
+
 import "./HomePage.scss";
 
-class HomePage extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      inQueue: false,
-    };
-  }
-  addSelfToQueue = () => {
-    var debug = "fdkljdsljksdajkl;";
-    return <ListGroup.Item>{debug}</ListGroup.Item>;
-    //Here we'll get the username from the state and add it at the end of the queue
-  };
+const url = new URL("/", window.location.href);
+url.protocol = url.protocol.replace("http", "ws");
+const socket = io.connect("ws://localhost:3000");
 
-  render() {
-    return (
-      <div className="queue-format">
-        <div className="queue-style">
-          <ListGroup className="list">
-            <ListGroup.Item>Adeel</ListGroup.Item>
-            <ListGroup.Item>Chuck</ListGroup.Item>
-            <ListGroup.Item>Racer X</ListGroup.Item>
-            <ListGroup.Item>Pickle Rick</ListGroup.Item>
-            <ListGroup.Item>Kazuma Kiryu</ListGroup.Item>
-            <ListGroup.Item>Teneez Given Physical Form</ListGroup.Item>
-            {this.addSelfToQueue()}
-          </ListGroup>
-          <Button variant="primary" onClick={this.addSelfToQueue()}>
-            Jump In
-          </Button>
-        </div>
+const joinPool = ({ id }) => {
+  socket.emit("pool.join", { id });
+};
+
+const HomePage = () => {
+  const [pool, setPool] = React.useState([]);
+  const { state: userState } = React.useContext(userStore);
+
+  React.useEffect(() => {
+    console.log("Attempt to connect");
+    socket.on("connect", () => {
+      console.log("Connected.");
+      console.log(userState);
+      socket
+        .emit("authenticate", { token: userState.token })
+        .on("authenticated", () => {
+          console.log("Authenticated w/ JWT!");
+          socket.on("pool.update", ({ pool }) => {
+            console.log(pool);
+            setPool(pool);
+          })
+        })
+        .on("unauthorized", (msg) => {
+          console.log(`Unauthorized: ${JSON.stringify(msg.data)}`);
+        });
+    });
+  }, [userState]);
+
+  return (
+    <div className="queue-format">
+      <div className="queue-style">
+        <h1>Queue</h1>
+        <ListGroup className="list">
+          {pool.map((user) => (
+            <ListGroup.Item>{user.tag}</ListGroup.Item>
+          ))}
+        </ListGroup>
+        <Button
+          className="queue-button"
+          variant="primary"
+          onClick={() => joinPool(userState.user)}
+        >
+          Jump In
+        </Button>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 export default HomePage;

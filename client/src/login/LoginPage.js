@@ -15,14 +15,14 @@ const LoginPage = (setUser) => {
 
   const handleSubmit = async () => {
     try {
-      const result = await axios.post("/authenticate", {
+      const result = await axios.post("/login", {
         email,
         password,
       });
 
       userState.dispatch({
         type: LOGIN_SUCCESS,
-        payload: { user: result.data },
+        payload: result.data,
       });
     } catch (err) {
       // Give the user negative feedback on login
