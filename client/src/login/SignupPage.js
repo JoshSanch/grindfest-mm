@@ -28,7 +28,7 @@ const SignupPage = () => {
     setIsValidated(true);
 
     try {
-      const result = await axios.post("/signup", {
+      const result = await axios.post("/api/signup", {
         email,
         password,
         tag,

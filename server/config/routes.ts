@@ -1,5 +1,5 @@
 import { Express, Request, Response } from "express";
-import passport from "passport";
+import path from "path";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -21,7 +21,7 @@ export default (app: Express) => {
   //=============================
   // Auth
   //=============================
-  app.post("/signup", async (req, res) => {
+  app.post("/api/signup", async (req, res) => {
     const { email, password, tag } = req.body;
     try {
       const user = await User.findOne({ email });
@@ -44,8 +44,13 @@ export default (app: Express) => {
     }
   });
 
-  app.post("/login", (req, res) => {
+  app.post("/api/login", (req, res) => {
     const { email, password } = req.body;
     logIn(email, password, res);
+  });
+
+  // All remaining requests return the React app, so it can handle routing.
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
   });
 };

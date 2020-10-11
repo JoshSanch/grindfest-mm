@@ -4,7 +4,9 @@
     "husky": "^4.3.0"
   },
   "scripts": {
-    "start": "concurrently \"cd server && yarn start\" \"cd client && yarn start\""
+    "start": "cd server && yarn start",
+    "dev-start": "concurrently \"cd server && yarn start\" \"cd client && yarn start\"",
+    "build": "cd client && yarn build"
   },
   "dependencies": {}
 }

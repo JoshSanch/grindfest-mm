@@ -16,7 +16,7 @@ const LoginPage = () => {
 
   const handleSubmit = async () => {
     try {
-      const result = await axios.post("/login", {
+      const result = await axios.post("/api/login", {
         email,
         password,
       });
