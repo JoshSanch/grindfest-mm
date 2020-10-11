@@ -59,7 +59,7 @@
     "tslint": "^6.1.3"
   },
   "scripts": {
-    "prebuild": "if [ \"$NODE_ENV\" != \"production\" ]; then eslint -c .eslintrc.js --fix; fi",
+    "prebuild": "if [ \"$NODE_ENV\" != \"production\" ]; then eslint -c .eslintrc.js --fix; fi; yarn install",
     "build": "tsc",
     "prestart": "npm run build",
     "start": "node .",
