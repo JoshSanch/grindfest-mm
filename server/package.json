@@ -60,7 +60,7 @@
   },
   "scripts": {
     "prebuild": "if [ \"$NODE_ENV\" != \"production\" ]; then eslint -c .eslintrc.js --fix; fi",
-    "build": "./node_modules/typescript/bin/tsc",
+    "build": "tsc",
     "prestart": "npm run build",
     "start": "node .",
     "debug": "nodemon --inspect .",
