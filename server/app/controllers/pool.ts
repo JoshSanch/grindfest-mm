@@ -18,6 +18,8 @@ export const joinPool = async (data: PoolJoinReq, socket: JwtSocket) => {
   const { id } = data;
   const authUserId = socket.decoded_token.id;
 
+  console.log(data);
+
   const user = await User.findById(id);
   const authUser = await User.findById(authUserId);
   if (!user) {

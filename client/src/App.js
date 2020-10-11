@@ -7,14 +7,15 @@ import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 
 import LoginPage from "./login/LoginPage";
+import SignupPage from "./login/SignupPage";
 import HomePage from "./queue/HomePage";
-import { userStore } from "./login/UserProvider";
+import { userStore, LOGOUT_SUCCESS } from "./login/UserProvider";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.scss";
 
 function App() {
-  const { state: userState } = React.useContext(userStore);
+  const { state: userState, dispatch } = React.useContext(userStore);
   console.log(userState);
   const isLoggedIn = Object.keys(userState).length > 0;
 
@@ -41,12 +42,20 @@ function App() {
           )}
           {isLoggedIn && (
             <Link to="/">
-              <Button variant="danger">Logout</Button>
+              <Button
+                variant="danger"
+                onClick={() => dispatch({ type: LOGOUT_SUCCESS })}
+              >
+                Logout
+              </Button>
             </Link>
           )}
         </Navbar>
         <Container className="content">
           <Switch>
+            <Route path="/signup">
+              <SignupPage />
+            </Route>
             <Route path="/login">
               <LoginPage />
             </Route>

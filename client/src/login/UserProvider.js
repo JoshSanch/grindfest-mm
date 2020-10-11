@@ -19,6 +19,7 @@ export const LOGOUT_SUCCESS = "logout.success";
 
 const UserProvider = ({ children }) => {
   const [state, dispatch] = useReducer((state, action) => {
+    
     switch (action.type) {
       case LOGIN_SUCCESS:
         const { token } = action.payload;
@@ -34,5 +35,6 @@ const UserProvider = ({ children }) => {
 
   return <Provider value={{ state, dispatch }}>{children}</Provider>;
 };
+
 
 export { userStore, UserProvider };
