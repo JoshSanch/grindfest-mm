@@ -59,7 +59,7 @@
     "typescript": "^4.0.3"
   },
   "scripts": {
-    "prebuild": "eslint -c .eslintrc.js --fix",
+    "prebuild": "if [ \"$NODE_ENV\" != \"production\" ]; then eslint -c .eslintrc.js --fix; fi",
     "build": "tsc",
     "prestart": "npm run build",
     "start": "node .",
