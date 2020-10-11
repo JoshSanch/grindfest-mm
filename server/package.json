@@ -60,9 +60,8 @@
   },
   "scripts": {
     "prebuild": "if [ \"$NODE_ENV\" != \"production\" ]; then eslint -c .eslintrc.js --fix; fi",
-    "build": "yarn tsc",
+    "build": "./node_modules/typescript/bin/tsc",
     "prestart": "npm run build",
-    "tsc": "tsc",
     "start": "node .",
     "debug": "nodemon --inspect .",
     "test": "echo \"Error: no test specified\" && exit 1"
