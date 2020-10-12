@@ -11,6 +11,7 @@
     "@types/immutable": "^3.8.7",
     "@types/jsonwebtoken": "^8.5.0",
     "@types/method-override": "^0.0.31",
+    "@types/mongoose": "^5.7.36",
     "@types/node": "^14.11.2",
     "@types/passport": "^1.0.4",
     "@types/passport-jwt": "^3.0.3",
@@ -50,7 +51,6 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@types/mongoose": "^5.7.36",
     "@typescript-eslint/eslint-plugin": "^4.3.0",
     "eslint": "^7.10.0",
     "eslint-config-prettier": "^6.12.0",
@@ -61,7 +61,7 @@
   "scripts": {
     "prebuild": "if [ \"$NODE_ENV\" != \"production\" ]; then eslint -c .eslintrc.js --fix; fi",
     "build": "tsc",
-    "prestart": "npm run build",
+    "dev-start": "yarn build && node .",
     "start": "node .",
     "debug": "nodemon --inspect .",
     "test": "echo \"Error: no test specified\" && exit 1"
