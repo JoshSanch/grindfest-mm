@@ -51,6 +51,6 @@ export default (app: Express) => {
 
   // All remaining requests return the React app, so it can handle routing.
   app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
+    res.sendfile(path.resolve(__dirname, '../client/build', 'index.html'));
   });
 };
