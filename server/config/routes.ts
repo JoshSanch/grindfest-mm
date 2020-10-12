@@ -14,9 +14,6 @@ export default (app: Express) => {
   //=============================
   // Static
   //=============================
-  app.get("/", (req: Request, res: Response) => {
-    res.sendfile(path.resolve(__dirname, '../../../client/build', 'index.html'));
-  });
 
   //=============================
   // Auth

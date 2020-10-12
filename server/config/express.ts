@@ -9,6 +9,6 @@ const env = process.env.NODE_ENV || 'development';
 const config = configs[env];
 
 export default (app: Express) => {
-  app.use(express.static(path.resolve(__dirname, '../client/build')));
+  app.use(express.static(path.resolve(__dirname, '../../../client/build')));
   app.use(methodOverride());
 };
