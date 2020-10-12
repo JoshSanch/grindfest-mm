@@ -9,7 +9,9 @@ const configs: Config = {
     rootPath: path.normalize(__dirname + "/.."),
     db: "mongodb://localhost/grindfestmm",
   },
-  production: {},
+  production: {
+    db: process.env.MONGO_URI,
+  },
 };
 
 export default configs;
