@@ -11,7 +11,7 @@ import "./HomePage.scss";
 
 const url = new URL("/", window.location.href);
 url.protocol = url.protocol.replace("http", "ws");
-const socket = io.connect("ws://localhost:3000");
+const socket = io.connect(url.toString());
 
 const joinPool = ({ id }) => {
   socket.emit("pool.join", { id });
