@@ -17,6 +17,10 @@ const joinPool = ({ _id: id }) => {
   socket.emit("pool.join", { id });
 };
 
+const startPoolWave = () => {
+  socket.emit("pool.assign", {});
+}
+
 const HomePage = () => {
   const [pool, setPool] = React.useState([]);
   const { state: userState } = React.useContext(userStore);
@@ -59,6 +63,15 @@ const HomePage = () => {
         >
           Jump In
         </Button>
+        {
+          <Button
+            className="queue-button"
+            variant="danger"
+            onClick={() => startPoolWave()}
+          >
+            Start Wave
+          </Button>
+        }
       </div>
     </div>
   );
