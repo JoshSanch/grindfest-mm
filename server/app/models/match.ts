@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 import { IUser } from "./user";
 
 export interface IMatch extends Document {
-  players: [IUser["id"]];
+  players: IUser["id"][];
   timeCreated: Date;
 }
 
