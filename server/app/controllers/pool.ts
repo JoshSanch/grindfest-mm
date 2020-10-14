@@ -6,7 +6,7 @@ import { Set } from "immutable";
 import { Random, nodeCrypto } from "random-js";
 
 const MAX_MATCHMAKING_TRIES = 100;
-const WAVE_TIME_SECONDS = 1000 * 60;
+const WAVE_TIME_SECONDS = 1000 * 60 * 30;
 
 export interface PoolJoinReq {
   id: IUser["_id"];
@@ -80,9 +80,9 @@ export const generateMatches = async (socket: JwtSocket) => {
 
   const authUserId = socket.decoded_token._id;
   const authUser = await User.findById(authUserId);
-  if (!authUser.isAdmin()) {
-    return;
-  }
+  // if (!authUser.isAdmin()) {
+  //   return;
+  // }
 
   for (let attempt = 0; attempt < MAX_MATCHMAKING_TRIES; attempt++) {
     // Shuffle the pool
@@ -114,18 +114,17 @@ export const generateMatches = async (socket: JwtSocket) => {
     }
   }
 
-  console.log(pairs);
-
   // Cache the pairs
   pairs.forEach((pair) => (matchedPairs = matchedPairs.add(Set(pair))));
+  const cleanedPairs: MatchPlayer[][] = pairs.map((pair) =>
+    pair.map((user) => ({ _id: user.id, tag: user.tag }))
+  );
 
   // Add the matches to the database
   const match = new Match();
   match.players = pairs.pop().map((user) => user.id);
 
-  const cleanedPairs: MatchPlayer[][] = pairs.map((pair) =>
-    pair.map((user) => ({ _id: user.id, tag: user.tag }))
-  );
+  console.log(cleanedPairs);
 
   socket.broadcast.emit("pool.assigned", { pairings: cleanedPairs });
   socket.emit("pool.assigned", { pairings: cleanedPairs });

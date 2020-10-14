@@ -23,6 +23,7 @@ const leavePool = ({ _id: id }) => {
 };
 
 const startPoolWave = () => {
+  console.log("Assign");
   socket.emit("pool.assign", {});
 };
 
@@ -45,9 +46,9 @@ const HomePage = () => {
           socket.on("pool.update", ({ pool }) => {
             setPool(pool);
           });
-          socket.on("pool.assigned", ({ pairs }) => {
-            console.log(pairs);
-            setPairings(pairs);
+          socket.on("pool.assigned", ({ pairings }) => {
+            console.log(pairings);
+            setPairings(pairings);
             setWaveStarted(true);
           });
           socket.on("wave.end", () => {
@@ -66,8 +67,8 @@ const HomePage = () => {
       <div className="queue-style">
         <h1>Queue</h1>
         <Queue waveStarted={waveStarted} users={pool} pairings={pairings} />
-        
-        { !waveStarted &&
+
+        {!waveStarted && (
           <Button
             className="queue-button"
             variant="primary"
@@ -75,8 +76,8 @@ const HomePage = () => {
           >
             Jump In
           </Button>
-        }
-        { user.role === "admin" && !waveStarted &&
+        )}
+        {userState.user && userState.user.type === 0 && !waveStarted && (
           <Button
             className="queue-button"
             variant="danger"
@@ -84,14 +85,16 @@ const HomePage = () => {
           >
             Start Wave
           </Button>
-        }
-        <Button
-          className="queue-button"
-          variant="primary"
-          onClick={() => leavePool(userState.user)}
-        >
-          Hop Out
-        </Button>
+        )}
+        {!waveStarted && (
+          <Button
+            className="queue-button"
+            variant="primary"
+            onClick={() => leavePool(userState.user)}
+          >
+            Hop Out
+          </Button>
+        )}
       </div>
     </div>
   );
