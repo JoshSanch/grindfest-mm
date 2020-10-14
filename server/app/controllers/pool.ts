@@ -6,6 +6,7 @@ import { Set } from "immutable";
 import { Random, nodeCrypto } from "random-js";
 
 const MAX_MATCHMAKING_TRIES = 100;
+const WAVE_TIME_SECONDS = 1000 * 60;
 
 export interface PoolJoinReq {
   id: IUser["_id"];
@@ -13,6 +14,11 @@ export interface PoolJoinReq {
 
 export interface PoolLeaveReq {
   id: IUser["_id"];
+}
+
+interface MatchPlayer {
+  _id: IUser["_id"];
+  tag: IUser["tag"];
 }
 
 let pool: Set<IUser> = Set();
@@ -82,13 +88,15 @@ export const generateMatches = async (socket: JwtSocket) => {
     // Shuffle the pool
     const tempPool = [...pool.values()];
     const shuffledPool = new Random(nodeCrypto).shuffle(tempPool);
-    pairs = shuffledPool.reduce((res, val, i, array) => {
-      if (i % 2 === 0) {
-        res.push(array.slice(i, i + 2));
-      }
+    pairs = shuffledPool
+      .reduce((res, val, i, array) => {
+        if (i % 2 === 0) {
+          res.push(array.slice(i, i + 2));
+        }
 
-      return res;
-    }, []).filter(pair => !matchedPairs.includes(pair));
+        return res;
+      }, [])
+      .filter((pair) => !matchedPairs.includes(pair));
 
     // Reject if not all pairings were made
     if (pairs.length < Math.floor(pool.size / 2)) {
@@ -109,9 +117,22 @@ export const generateMatches = async (socket: JwtSocket) => {
   console.log(pairs);
 
   // Cache the pairs
-  pairs.forEach(pair => matchedPairs = matchedPairs.add(Set(pair)));
+  pairs.forEach((pair) => (matchedPairs = matchedPairs.add(Set(pair))));
 
   // Add the matches to the database
   const match = new Match();
-  match.players = pairs.pop().map(user => user.id);
+  match.players = pairs.pop().map((user) => user.id);
+
+  const cleanedPairs: MatchPlayer[][] = pairs.map((pair) =>
+    pair.map((user) => ({ _id: user.id, tag: user.tag }))
+  );
+
+  socket.broadcast.emit("pool.assigned", { pairings: cleanedPairs });
+  socket.emit("pool.assigned", { pairings: cleanedPairs });
+
+  // Delay broadcast of wave finishing for 1 minute
+  setTimeout(() => {
+    socket.broadcast.emit("wave.end", {});
+    socket.emit("wave.end", {});
+  }, WAVE_TIME_SECONDS);
 };
