@@ -3,9 +3,9 @@ import { Express, Request, Response } from "express";
 import User, { IUser } from "../models/user";
 import Match, { IMatch } from "../models/match";
 import { Set } from "immutable";
-import Random from "random-js";
+import { Random, nodeCrypto } from "random-js";
 
-const MAX_MATCHMAKING_TRIES = 10;
+const MAX_MATCHMAKING_TRIES = 100;
 
 export interface PoolJoinReq {
   id: IUser["_id"];
@@ -74,7 +74,8 @@ export const generateMatches = (socket: JwtSocket) => {
 
   for (let attempt = 0; attempt < MAX_MATCHMAKING_TRIES; attempt++) {
     // Shuffle the pool
-    const shuffledPool = Random.shuffle(Random.nodeCrypto, [...pool.values()]);
+    const tempPool = [...pool.values()];
+    const shuffledPool = new Random(nodeCrypto).shuffle(tempPool);
     pairs = shuffledPool.reduce((res, val, i, array) => {
       if (i % 2 === 0) {
         res.push(array.slice(i, i + 2));
