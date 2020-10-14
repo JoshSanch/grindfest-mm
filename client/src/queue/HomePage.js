@@ -17,9 +17,13 @@ const joinPool = ({ _id: id }) => {
   socket.emit("pool.join", { id });
 };
 
+const leavePool = ({ _id: id }) => {
+  socket.emit("pool.leave", { id });
+};
+
 const startPoolWave = () => {
   socket.emit("pool.assign", {});
-}
+};
 
 const HomePage = () => {
   const [pool, setPool] = React.useState([]);
@@ -36,14 +40,12 @@ const HomePage = () => {
           console.log("Authenticated w/ JWT!");
           socket.emit("pool.show", {});
           socket.on("pool.update", ({ pool }) => {
-            console.log(pool);
             setPool(pool);
           });
         })
         .on("unauthorized", (msg) => {
           console.log(`Unauthorized: ${JSON.stringify(msg.data)}`);
         });
-
     });
   }, []);
 
@@ -72,6 +74,13 @@ const HomePage = () => {
             Start Wave
           </Button>
         }
+        <Button
+          className="queue-button"
+          variant="primary"
+          onClick={() => leavePool(userState.user)}
+        >
+          Hop Out
+        </Button>
       </div>
     </div>
   );

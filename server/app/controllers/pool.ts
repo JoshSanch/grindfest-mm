@@ -11,6 +11,10 @@ export interface PoolJoinReq {
   id: IUser["_id"];
 }
 
+export interface PoolLeaveReq {
+  id: IUser["_id"];
+}
+
 let pool: Set<IUser> = Set();
 let matchedPairs: Set<Set<IUser>> = Set();
 let byePlayers: Set<IUser> = Set();
@@ -43,26 +47,22 @@ export const joinPool = async (data: PoolJoinReq, socket: JwtSocket) => {
  * @param req the request; must include userId in the JSON body
  * @param res the response
  */
-export const leavePool = async (req: Request, res: Response) => {
-  const { userId } = req.body;
-  const authUser = req.user as IUser;
-  if (userId == null) {
-    return res.status(400).json({ message: "Missing `userId` parameter" });
-  }
+export const leavePool = async (data: PoolLeaveReq, socket: JwtSocket) => {
+  const { id } = data;
+  const authUserId = socket.decoded_token._id;
 
-  const user = await User.findById(userId);
+  console.log(socket.decoded_token._id);
+
+  const user = await User.findById(id);
+  const authUser = await User.findById(authUserId);
   if (!user) {
-    return res
-      .status(400)
-      .json({ message: `User with id "${userId}" does not exist` });
+    console.error("User doesn't exist");
+  } else if (authUser.isAdmin() || authUser.id === id) {
+    pool = pool.delete(user);
   }
 
-  if (authUser.isAdmin() || authUser.id === userId) {
-    pool.delete(user);
-    res.send(200);
-  } else {
-    res.send(403);
-  }
+  socket.broadcast.emit("pool.update", { pool: [...pool.values()] });
+  socket.emit("pool.update", { pool: [...pool.values()] });
 };
 
 export const showPool = (socket: JwtSocket) => {
