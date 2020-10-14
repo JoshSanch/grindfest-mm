@@ -55,7 +55,7 @@ const HomePage = () => {
         <h1>Queue</h1>
         <ListGroup className="list">
           {pool.map((user) => (
-            <ListGroup.Item>{user.tag}</ListGroup.Item>
+            <ListGroup.Item key={user.tag}>{user.tag}</ListGroup.Item>
           ))}
         </ListGroup>
         <Button
