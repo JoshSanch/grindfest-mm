@@ -1,11 +1,12 @@
 import React from "react";
 
 import Button from "react-bootstrap/Button";
-import ListGroup from "react-bootstrap/ListGroup";
 
 import io from "socket.io-client";
 
 import { userStore } from "../login/UserProvider";
+
+import Queue from "./Queue.js";
 
 import "./HomePage.scss";
 
@@ -27,6 +28,8 @@ const startPoolWave = () => {
 
 const HomePage = () => {
   const [pool, setPool] = React.useState([]);
+  const [pairings, setPairings] = React.useState([]);
+  const [waveStarted, setWaveStarted] = React.useState(false);
   const { state: userState } = React.useContext(userStore);
 
   React.useEffect(() => {
@@ -42,6 +45,15 @@ const HomePage = () => {
           socket.on("pool.update", ({ pool }) => {
             setPool(pool);
           });
+          socket.on("pool.assigned", ({ pairs }) => {
+            console.log(pairs);
+            setPairings(pairs);
+            setWaveStarted(true);
+          });
+          socket.on("wave.end", () => {
+            console.log("Wave ending");
+            setWaveStarted(false);
+          });
         })
         .on("unauthorized", (msg) => {
           console.log(`Unauthorized: ${JSON.stringify(msg.data)}`);
@@ -53,19 +65,18 @@ const HomePage = () => {
     <div className="queue-format">
       <div className="queue-style">
         <h1>Queue</h1>
-        <ListGroup className="list">
-          {pool.map((user) => (
-            <ListGroup.Item key={user.tag}>{user.tag}</ListGroup.Item>
-          ))}
-        </ListGroup>
-        <Button
-          className="queue-button"
-          variant="primary"
-          onClick={() => joinPool(userState.user)}
-        >
-          Jump In
-        </Button>
-        {
+        <Queue waveStarted={waveStarted} users={pool} pairings={pairings} />
+        
+        { !waveStarted &&
+          <Button
+            className="queue-button"
+            variant="primary"
+            onClick={() => joinPool(userState.user)}
+          >
+            Jump In
+          </Button>
+        }
+        { user.role === "admin" && !waveStarted &&
           <Button
             className="queue-button"
             variant="danger"
