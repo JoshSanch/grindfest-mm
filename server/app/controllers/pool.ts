@@ -69,8 +69,14 @@ export const showPool = (socket: JwtSocket) => {
   socket.emit("pool.update", { pool: [...pool.values()] });
 };
 
-export const generateMatches = (socket: JwtSocket) => {
+export const generateMatches = async (socket: JwtSocket) => {
   let pairs: ([IUser, IUser] | [IUser])[] = [];
+
+  const authUserId = socket.decoded_token._id;
+  const authUser = await User.findById(authUserId);
+  if (!authUser.isAdmin()) {
+    return;
+  }
 
   for (let attempt = 0; attempt < MAX_MATCHMAKING_TRIES; attempt++) {
     // Shuffle the pool
