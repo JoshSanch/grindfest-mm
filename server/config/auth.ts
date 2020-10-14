@@ -40,7 +40,9 @@ export const logIn = async (email: string, password: string, res: Response) => {
           expiresIn: 360000,
         };
         const secret = "SECRET_KEY";
-        const token = jwt.sign({ email, id: user.id }, secret, opts);
+        // I have besmirched the good name of JSON
+        console.log(user);
+        const token = jwt.sign(user.toSafeObject(), secret, opts);
         return res.status(200).json({
           message: "Auth was successful",
           user,

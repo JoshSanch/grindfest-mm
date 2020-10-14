@@ -8,5 +8,5 @@ export default (socket: JwtSocket) => {
   //=============================
   socket.on("pool.join", (req: PoolJoinReq) => joinPool(req, socket));
   socket.on("pool.leave", leavePool);
-  socket.on("pool.show", showPool);
+  socket.on("pool.show", () => showPool(socket));
 }

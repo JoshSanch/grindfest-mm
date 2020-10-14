@@ -16,20 +16,20 @@ let pool: Set<IUser> = Set();
  */
 export const joinPool = async (data: PoolJoinReq, socket: JwtSocket) => {
   const { id } = data;
-  const authUserId = socket.decoded_token.id;
+  const authUserId = socket.decoded_token._id;
 
-  console.log(data);
+  console.log(socket.decoded_token);
 
   const user = await User.findById(id);
   const authUser = await User.findById(authUserId);
   if (!user) {
-    return console.error("User doesn't exist");
+    console.error("User doesn't exist");
+  } else if (authUser.isAdmin() || authUser.id === id) {
+    pool = pool.add(user);
   }
 
-  if (authUser.isAdmin() || authUser.id === id) {
-    pool = pool.add(user);
-    socket.emit("pool.update", { pool: [...pool.values()] });
-  }
+  socket.broadcast.emit("pool.update", { pool: [...pool.values()] });
+  socket.emit("pool.update", { pool: [...pool.values()] });
 };
 
 /**
@@ -59,7 +59,6 @@ export const leavePool = async (req: Request, res: Response) => {
   }
 };
 
-export const showPool = (req: Request, res: Response) => {
-  console.log([...pool]);
-  res.status(200).json({ pool: [...pool] });
+export const showPool = (socket: JwtSocket) => {
+  socket.emit("pool.update", { pool: [...pool.values()] });
 };

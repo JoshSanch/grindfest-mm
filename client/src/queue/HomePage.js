@@ -11,9 +11,9 @@ import "./HomePage.scss";
 
 const url = new URL("/", window.location.href);
 url.protocol = url.protocol.replace("http", "ws");
-const socket = io.connect(url.toString());
+var socket;
 
-const joinPool = ({ id }) => {
+const joinPool = ({ _id: id }) => {
   socket.emit("pool.join", { id });
 };
 
@@ -23,23 +23,25 @@ const HomePage = () => {
 
   React.useEffect(() => {
     console.log("Attempt to connect");
+    socket = io.connect(url.toString());
     socket.on("connect", () => {
       console.log("Connected.");
-      console.log(userState);
       socket
         .emit("authenticate", { token: userState.token })
         .on("authenticated", () => {
           console.log("Authenticated w/ JWT!");
+          socket.emit("pool.show", {});
           socket.on("pool.update", ({ pool }) => {
             console.log(pool);
             setPool(pool);
-          })
+          });
         })
         .on("unauthorized", (msg) => {
           console.log(`Unauthorized: ${JSON.stringify(msg.data)}`);
         });
+
     });
-  }, [userState]);
+  }, []);
 
   return (
     <div className="queue-format">

@@ -12,6 +12,7 @@ export interface IUser extends Document {
   tag: string;
   type: UserType;
   isAdmin: () => boolean;
+  toSafeObject: () => IUser;
   equals: (other: IUser) => boolean;
   hashCode: () => number;
 }
@@ -34,6 +35,12 @@ UserSchema.methods.equals = function (other: IUser) {
 
 UserSchema.methods.hashCode = function () {
   return parseInt(this.id, 16) | 0;
+}
+
+UserSchema.methods.toSafeObject = function () {
+  const obj = this.toObject();
+  delete obj.password;
+  return obj;
 }
 
 UserSchema.methods.toJSON = function () {
