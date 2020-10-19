@@ -27,6 +27,11 @@ const startPoolWave = () => {
   socket.emit("pool.assign", {});
 };
 
+const cancelPoolWave = () => {
+  console.log("Cancel");
+  socket.emit("wave.cancel");
+}
+
 const HomePage = () => {
   const [pool, setPool] = React.useState([]);
   const [pairings, setPairings] = React.useState([]);
@@ -84,6 +89,15 @@ const HomePage = () => {
             onClick={() => startPoolWave()}
           >
             Start Wave
+          </Button>
+        )}
+        {userState.user && userState.user.type === 0 && waveStarted && (
+          <Button
+            className="queue-button"
+            variant="danger"
+            onClick={() => cancelPoolWave()}
+          >
+            Cancel Wave
           </Button>
         )}
         {!waveStarted && (

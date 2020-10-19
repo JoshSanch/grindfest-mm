@@ -24,6 +24,7 @@ interface MatchPlayer {
 let pool: Set<IUser> = Set();
 let matchedPairs: Set<Set<IUser>> = Set();
 let byePlayers: Set<IUser> = Set();
+let currentPhaseTimeout: NodeJS.Timeout;
 
 /**
  * An API endpoint to join the pool
@@ -121,17 +122,33 @@ export const generateMatches = async (socket: JwtSocket) => {
   );
 
   // Add the matches to the database
-  const match = new Match();
-  match.players = pairs.pop().map((user) => user.id);
+  pairs.forEach(async (pair) => {
+    const match = new Match();
+    match.players = pair.map((user) => user.id);
+    await match.save();
+  });
 
   console.log(cleanedPairs);
 
   socket.broadcast.emit("pool.assigned", { pairings: cleanedPairs });
   socket.emit("pool.assigned", { pairings: cleanedPairs });
 
-  // Delay broadcast of wave finishing for 1 minute
-  setTimeout(() => {
+  // Delay broadcast of wave finishing
+  if (currentPhaseTimeout) {
+    clearTimeout(currentPhaseTimeout);
+  }
+  currentPhaseTimeout = setTimeout(() => {
     socket.broadcast.emit("wave.end", {});
     socket.emit("wave.end", {});
   }, WAVE_TIME_SECONDS);
+};
+
+export const cancelWave = (socket: JwtSocket) => {
+  if (currentPhaseTimeout) {
+    clearTimeout(currentPhaseTimeout);
+    currentPhaseTimeout = undefined;
+  }
+
+  socket.broadcast.emit("wave.end", {});
+  socket.emit("wave.end", {});
 };

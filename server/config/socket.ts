@@ -4,6 +4,7 @@ import {
   leavePool,
   showPool,
   generateMatches,
+  cancelWave,
   PoolJoinReq,
   PoolLeaveReq,
 } from "../app/controllers/pool";
@@ -17,4 +18,5 @@ export default (socket: JwtSocket) => {
   socket.on("pool.leave", (req: PoolLeaveReq) => leavePool(req, socket));
   socket.on("pool.show", () => showPool(socket));
   socket.on("pool.assign", () => generateMatches(socket));
+  socket.on("wave.cancel", () => cancelWave(socket));
 };
